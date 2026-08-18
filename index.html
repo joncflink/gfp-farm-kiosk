@@ -1,1 +1,562 @@
-PLACEHOLDER_WILL_FAIL
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GFP Kiosco de Granja • Planta Hoy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --g-dark: #14532d; --g: #16a34a; --g-light: #dcfce7;
+      --red: #dc2626; --yellow: #eab308; --blue: #0284c7;
+      --bg: #f0fdf4; --card: #fff; --text: #14532d; --muted: #4b5563; --border: #bbf7d0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+    .header {
+      background: linear-gradient(135deg, #14532d, #166534);
+      color: #fff; padding: 6px 20px; display: flex; justify-content: space-between; align-items: center;
+      height: 58px; flex-shrink: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo { width: 36px; height: 36px; background: var(--yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .brand h1 { font-size: 1.05rem; font-weight: 800; line-height: 1.1; }
+    .brand p { font-size: 0.65rem; opacity: 0.9; }
+    .clock-block { text-align: right; }
+    .clock { font-size: 1.6rem; font-weight: 800; line-height: 1.05; }
+    .date { font-size: 0.68rem; opacity: 0.95; }
+    .date-en { font-size: 0.62rem; opacity: 0.75; }
+    .main {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 0.95fr;
+      grid-template-rows: auto 1fr auto auto;
+      gap: 10px;
+      padding: 10px 12px 6px;
+      height: calc(100% - 58px - 32px);
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+    .urgency {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: #fff; border-radius: 10px; padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      box-shadow: 0 3px 12px rgba(220,38,38,0.25);
+    }
+    .urgency-left { text-align: left; }
+    .urgency-es { font-size: 1.7rem; font-weight: 900; line-height: 1; }
+    .urgency-en { font-size: 0.95rem; font-weight: 700; opacity: 0.9; }
+    .urgency-sub { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+    .urgency-right { text-align: right; font-size: 0.78rem; opacity: 0.9; max-width: 280px; }
+    .card {
+      background: var(--card); border-radius: 10px; border: 1px solid var(--border);
+      display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .card-h {
+      background: var(--g-dark); color: #fff; padding: 6px 12px;
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+      font-size: 0.82rem; font-weight: 700;
+    }
+    .card-h span { font-weight: 500; font-size: 0.7rem; opacity: 0.85; }
+    .badge {
+      background: var(--yellow); color: #1a1a1a; font-size: 0.62rem; font-weight: 800;
+      padding: 2px 7px; border-radius: 10px;
+    }
+    .badge.blue { background: #7dd3fc; }
+    .card-b { padding: 6px 10px; flex: 1; overflow-y: auto; min-height: 0; }
+    .task-list { list-style: none; }
+    .task-item {
+      display: grid; grid-template-columns: 22px 1fr auto; align-items: center;
+      gap: 8px; padding: 6px 4px; border-bottom: 1px solid #f0fdf4;
+    }
+    .task-item:last-child { border-bottom: none; }
+    .task-item.done { opacity: 0.45; }
+    .task-item.done .tn { text-decoration: line-through; }
+    .check {
+      width: 20px; height: 20px; border: 2px solid var(--g); border-radius: 5px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      background: #fff; font-size: 12px; color: transparent; flex-shrink: 0;
+    }
+    .task-item.done .check { background: var(--g); color: #fff; }
+    .tn { font-weight: 600; font-size: 0.82rem; line-height: 1.2; }
+    .tm { font-size: 0.65rem; color: var(--muted); }
+    .tq {
+      font-weight: 700; font-size: 0.72rem; color: var(--g-dark);
+      background: var(--g-light); padding: 2px 8px; border-radius: 5px; white-space: nowrap;
+    }
+    .other .task-item { grid-template-columns: 22px 1fr; }
+    .progress-wrap { padding: 6px 10px 8px; border-top: 1px solid var(--border); background: #fafdf9; flex-shrink: 0; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 600; margin-bottom: 3px; color: var(--muted); }
+    .progress-bar { height: 7px; background: #e5e7eb; border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--g), #22c55e); border-radius: 10px; transition: width 0.3s; width: 0%; }
+    .weather-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .w-now {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px; background: #f0f9ff; border-radius: 8px; margin-bottom: 6px;
+    }
+    .w-icon { font-size: 2rem; line-height: 1; }
+    .w-temp { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+    .w-desc { font-size: 0.7rem; color: var(--muted); }
+    .w-day {
+      text-align: center; padding: 5px 3px; background: #f8fafc; border-radius: 6px;
+      font-size: 0.65rem;
+    }
+    .w-day .d { font-weight: 700; margin-bottom: 1px; text-transform: capitalize; }
+    .w-day .t { font-weight: 800; font-size: 0.85rem; }
+    .w-day .r { color: var(--blue); font-size: 0.62rem; }
+    .impact-num {
+      font-size: 2.4rem; font-weight: 900; color: var(--g); line-height: 1;
+      text-align: center; margin: 4px 0;
+    }
+    .impact-label { text-align: center; font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+    .impact-sub { text-align: center; font-size: 0.65rem; color: var(--muted); opacity: 0.8; }
+    .staff-list { font-size: 0.8rem; }
+    .staff-item { padding: 4px 0; border-bottom: 1px solid #f0fdf4; display: flex; gap: 6px; align-items: center; }
+    .staff-item:last-child { border-bottom: none; }
+    .staff-role { font-size: 0.65rem; color: var(--muted); }
+    .quote-card {
+      background: linear-gradient(160deg, #14532d, #0f3d24);
+      color: #fff; border-radius: 10px; padding: 12px 14px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .quote-card .q { font-size: 0.88rem; font-weight: 600; line-height: 1.35; font-style: italic; }
+    .quote-card .ref { font-size: 0.68rem; opacity: 0.8; margin-top: 6px; }
+    .photo-wrap {
+      position: relative; background: #e5e7eb; border-radius: 10px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; min-height: 0;
+    }
+    .photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.55); color: #fff; font-size: 0.65rem;
+      padding: 4px 8px; text-align: center;
+    }
+    .photo-placeholder { text-align: center; color: var(--muted); font-size: 0.75rem; padding: 16px; }
+    .weekly-nums { display: flex; justify-content: space-around; text-align: center; padding: 6px 0; }
+    .weekly-nums .n { font-size: 1.3rem; font-weight: 800; color: var(--g-dark); }
+    .weekly-nums .l { font-size: 0.62rem; color: var(--muted); }
+    .footer {
+      background: #fff; border-top: 1px solid var(--border); padding: 0 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.62rem; color: var(--muted); height: 32px; flex-shrink: 0;
+    }
+    .footer strong { color: var(--g-dark); }
+    .controls {
+      position: fixed; bottom: 38px; right: 12px; display: flex; gap: 6px;
+      z-index: 50; opacity: 0.25; transition: opacity 0.2s;
+    }
+    .controls:hover { opacity: 1; }
+    .ctrl-btn {
+      width: 34px; height: 34px; border-radius: 50%; background: var(--g-dark);
+      color: #fff; border: none; font-size: 14px; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .edit-panel {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(3px);
+    }
+    .edit-panel.open { display: flex; }
+    .edit-box {
+      background: #fff; border-radius: 14px; width: 94%; max-width: 620px;
+      max-height: 90vh; overflow-y: auto; padding: 18px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    }
+    .edit-box h2 { font-size: 1.1rem; margin-bottom: 4px; color: var(--g-dark); }
+    .edit-box h2 span { font-size: 0.85rem; font-weight: 500; opacity: 0.7; }
+    .edit-box p { color: #666; margin-bottom: 10px; font-size: 0.78rem; }
+    .edit-box label { display: block; font-weight: 600; font-size: 0.75rem; margin: 10px 0 3px; color: var(--muted); }
+    .edit-box textarea, .edit-box input {
+      width: 100%; padding: 8px 10px; border: 1.5px solid var(--border);
+      border-radius: 7px; font-size: 0.88rem; font-family: inherit;
+    }
+    .edit-box textarea { resize: vertical; }
+    .edit-box textarea:focus, .edit-box input:focus {
+      outline: none; border-color: var(--g); box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
+    }
+    .edit-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .btn {
+      padding: 9px 16px; border-radius: 7px; font-weight: 700; font-size: 0.85rem;
+      border: none; cursor: pointer;
+    }
+    .btn-primary { background: var(--g); color: #fff; }
+    .btn-secondary { background: #e5e7eb; color: var(--text); }
+    .btn-danger { background: #fee2e2; color: #b91c1c; }
+    .empty { text-align: center; padding: 14px 8px; color: var(--muted); font-size: 0.78rem; }
+    .offline { color: #b91c1c; font-size: 0.7rem; }
+    @media (max-width: 1100px) {
+      .main { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto 1fr auto auto; overflow-y: auto; }
+      .urgency { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">🌱</div>
+      <div>
+        <h1>Global Food Providers</h1>
+        <p>Kiosco de Trabajo Diario • Chiriquí, Panamá</p>
+      </div>
+    </div>
+    <div class="clock-block">
+      <div class="clock" id="clock">--:--</div>
+      <div class="date" id="date">Cargando...</div>
+      <div class="date-en" id="dateEn"></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="urgency">
+      <div class="urgency-left">
+        <div class="urgency-es">¡PLANTA HOY!</div>
+        <div class="urgency-en">PLANT TODAY</div>
+        <div class="urgency-sub">Cada semilla plantada hoy alimenta a un niño mañana</div>
+      </div>
+      <div class="urgency-right" id="smartTip">Cargando consejo del día...</div>
+    </div>
+    <div class="card" style="grid-row: span 2;">
+      <div class="card-h">🌱 Siembra de Hoy <span>/ Today's Planting</span>
+        <span class="badge" id="plantBadge">0</span>
+      </div>
+      <div class="card-b">
+        <ul class="task-list" id="plantList"></ul>
+        <div class="empty" id="plantEmpty" style="display:none;">No hay tareas de siembra / No planting tasks</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Progreso / Progress</span><span id="progressText">0/0</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </div>
+    <div class="card other" style="grid-row: span 2;">
+      <div class="card-h">📋 Otro Trabajo <span>/ Other Work</span>
+        <span class="badge blue" id="otherBadge">0</span>
+      </div>
+      <div class="card-b">
+        <ul class="task-list" id="otherList"></ul>
+        <div class="empty" id="otherEmpty" style="display:none;">No hay otras tareas / No other tasks</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px; min-height:0; grid-row: span 2;">
+      <div class="card" style="flex:1.4; min-height:140px;">
+        <div class="card-h">🌤️ Clima Boquete / Chiriquí <span>/ Weather</span></div>
+        <div class="card-b" id="weatherBox" style="min-height:110px;">
+          <div class="empty">Cargando clima... / Loading weather...</div>
+        </div>
+      </div>
+      <div class="card" style="flex-shrink:0;">
+        <div class="card-h">❤️ Impacto <span>/ Impact</span></div>
+        <div class="card-b" style="padding:8px;">
+          <div class="impact-num" id="impactNum">0</div>
+          <div class="impact-label">Niños alimentados esta semana</div>
+          <div class="impact-sub">Children fed this week</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">📊 Meta Semanal <span>/ Weekly Goal</span></div>
+      <div class="card-b">
+        <div class="weekly-nums">
+          <div><div class="n" id="weekDone">0</div><div class="l">Hecho / Done</div></div>
+          <div><div class="n" id="weekGoal">20</div><div class="l">Meta / Goal</div></div>
+          <div><div class="n" id="weekPct">0%</div><div class="l">Completado</div></div>
+        </div>
+        <div class="progress-bar" style="margin-top:4px;"><div class="progress-fill" id="weekFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h">👥 Equipo de Hoy <span>/ Staff Today</span></div>
+      <div class="card-b">
+        <div class="staff-list" id="staffList"></div>
+      </div>
+    </div>
+    <div class="photo-wrap" id="photoWrap">
+      <div class="photo-placeholder" id="photoPlaceholder">📷 Foto del día<br><span style="font-size:0.65rem">Photo of the day</span></div>
+      <img id="photoImg" style="display:none;" alt="Farm photo">
+      <div class="photo-label" id="photoLabel" style="display:none;"></div>
+    </div>
+    <div class="quote-card" style="grid-column: 1 / -1;" id="quoteCard">
+      <div class="q" id="quoteText">"El que siembra generosamente, generosamente también segará."</div>
+      <div class="ref" id="quoteRef">— 2 Corintios 9:6 / 2 Corinthians 9:6</div>
+    </div>
+  </main>
+  <div class="footer">
+    <div>Actualizado: <strong id="lastUpdated">—</strong></div>
+    <div>Global Food Providers • Alimentando Niños, Formando Líderes</div>
+    <div>Supervisor: ✏️ o tecla <strong>E</strong></div>
+  </div>
+  <div class="controls">
+    <button class="ctrl-btn" onclick="toggleEdit()" title="Editar">✏️</button>
+    <button class="ctrl-btn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
+  </div>
+  <div class="edit-panel" id="editPanel">
+    <div class="edit-box">
+      <h2>✏️ Actualizar Kiosco <span>/ Update Kiosk</span></h2>
+      <p>Una tarea por línea. Siembra: <code>Cultivo | Sección | Cantidad</code></p>
+      <label>🌱 Siembra / Planting</label>
+      <textarea id="editPlant" rows="4"></textarea>
+      <label>📋 Otro trabajo / Other work</label>
+      <textarea id="editOther" rows="3"></textarea>
+      <label>❤️ Niños alimentados esta semana / Children fed this week</label>
+      <input type="number" id="editImpact" min="0" value="0">
+      <label>📊 Meta semanal de bandejas / Weekly tray goal</label>
+      <input type="number" id="editWeekGoal" min="1" value="20">
+      <label>📊 Bandejas hechas esta semana / Trays done this week</label>
+      <input type="number" id="editWeekDone" min="0" value="0">
+      <label>👥 Equipo de hoy / Staff (Nombre - Rol)</label>
+      <textarea id="editStaff" rows="3"></textarea>
+      <label>📷 URL de foto del día / Photo URL</label>
+      <input type="text" id="editPhoto" placeholder="https://...">
+      <label>📷 Título de la foto / Photo caption</label>
+      <input type="text" id="editPhotoCaption">
+      <div class="edit-actions">
+        <button class="btn btn-primary" onclick="saveAll()">Guardar todo / Save all</button>
+        <button class="btn btn-secondary" onclick="toggleEdit()">Cancelar</button>
+        <button class="btn btn-danger" onclick="resetDefaults()">Restaurar ejemplos</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const DATA_VERSION = 5;
+    const LAT = 8.78, LON = -82.43;
+    const DEFAULT_PLANT = [
+      { name: "Col rizada (Azul) / Kale (Blue)", section: "Invernadero Sec. 1 / GH Section 1", qty: "4 bandejas / trays", done: false },
+      { name: "Acelga / Swiss Chard", section: "Invernadero Sec. 2 / GH Section 2", qty: "3 bandejas / trays", done: false },
+      { name: "Espinaca / Spinach", section: "Vivero / Nursery", qty: "5 bandejas / trays", done: false }
+    ];
+    const DEFAULT_OTHER = [
+      { name: "Alimentar conejos y recoger abono / Feed rabbits & collect manure", done: false },
+      { name: "Cosechar verdes para deshidratación / Harvest greens for dehydration", done: false },
+      { name: "Limpiar mesas de empaque / Clean packing tables", done: false },
+      { name: "Revisar líneas de riego / Check irrigation lines", done: false }
+    ];
+    const DEFAULT_STAFF = [
+      { name: "Dr. Daniel Daves", role: "Supervisor" },
+      { name: "Equipo de campo", role: "Siembra / Planting" }
+    ];
+    const QUOTES = [
+      { es: "El que siembra generosamente, generosamente también segará.", ref: "2 Corintios 9:6 / 2 Corinthians 9:6" },
+      { es: "Todo lo que hagan, háganlo de corazón, como para el Señor.", ref: "Colosenses 3:23 / Colossians 3:23" },
+      { es: "No nos cansemos de hacer el bien, porque a su debido tiempo cosecharemos.", ref: "Gálatas 6:9 / Galatians 6:9" },
+      { es: "La tierra produce por sí misma: primero el tallo, luego la espiga, después el grano.", ref: "Marcos 4:28 / Mark 4:28" },
+      { es: "Enséñame a hacer tu voluntad, porque tú eres mi Dios.", ref: "Salmo 143:10 / Psalm 143:10" }
+    ];
+    const WMO = {
+      0: ["☀️","Despejado","Clear"], 1: ["🌤️","Mayormente despejado","Mainly clear"],
+      2: ["⛅","Parcialmente nublado","Partly cloudy"], 3: ["☁️","Nublado","Overcast"],
+      45: ["🌫️","Niebla","Fog"], 48: ["🌫️","Niebla","Fog"],
+      51: ["🌦️","Llovizna","Drizzle"], 53: ["🌦️","Llovizna","Drizzle"], 55: ["🌦️","Llovizna","Drizzle"],
+      61: ["🌧️","Lluvia","Rain"], 63: ["🌧️","Lluvia","Rain"], 65: ["🌧️","Lluvia fuerte","Heavy rain"],
+      80: ["🌧️","Chubascos","Showers"], 81: ["🌧️","Chubascos","Showers"], 82: ["🌧️","Chubascos fuertes","Heavy showers"],
+      95: ["⛈️","Tormenta","Thunderstorm"]
+    };
+    let plantTasks = [], otherTasks = [], staff = [];
+    let impact = 0, weekGoal = 20, weekDone = 0;
+    let photoUrl = "", photoCaption = "";
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').textContent = now.toLocaleTimeString('es-PA', { hour: '2-digit', minute: '2-digit', hour12: true });
+      document.getElementById('date').textContent = now.toLocaleDateString('es-PA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('dateEn').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"');
+    }
+    function weatherIcon(code) { return WMO[code] || ["🌡️", "—", "—"]; }
+    async function loadWeather() {
+      const box = document.getElementById('weatherBox');
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America/Panama&forecast_days=3`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('weather fail');
+        const data = await res.json();
+        const cur = data.current;
+        const daily = data.daily;
+        const [icon, descEs, descEn] = weatherIcon(cur.weather_code);
+        let daysHtml = '';
+        for (let i = 0; i < 3; i++) {
+          const d = new Date(daily.time[i] + 'T12:00:00');
+          const dayName = d.toLocaleDateString('es-PA', { weekday: 'short' });
+          const [di] = weatherIcon(daily.weather_code[i]);
+          const rain = daily.precipitation_probability_max[i];
+          daysHtml += `<div class="w-day"><div class="d">${dayName}</div><div>${di}</div><div class="t">${Math.round(daily.temperature_2m_max[i])}°</div><div class="r">${rain}% lluvia</div></div>`;
+        }
+        box.innerHTML = `<div class="w-now"><div class="w-icon">${icon}</div><div><div class="w-temp">${Math.round(cur.temperature_2m)}°C</div><div class="w-desc">${descEs} / ${descEn}</div><div class="w-desc">💧 ${cur.relative_humidity_2m}% · 💨 ${Math.round(cur.wind_speed_10m)} km/h</div></div></div><div class="weather-grid">${daysHtml}</div>`;
+        updateSmartTip(cur, daily);
+      } catch (e) {
+        box.innerHTML = `<div class="w-now"><div class="w-icon">🌤️</div><div><div class="w-temp">--°C</div><div class="w-desc">Clima no disponible / Weather offline</div></div></div>`;
+        document.getElementById('smartTip').innerHTML = '<strong>💡 Consejo / Tip</strong><br>Planta hoy — no dejes para mañana.<br><em style="opacity:0.85">Plant today — do not wait until tomorrow.</em>';
+      }
+    }
+    function updateSmartTip(cur, daily) {
+      const rainToday = daily.precipitation_probability_max[0];
+      const temp = cur.temperature_2m;
+      let tipEs = '', tipEn = '';
+      if (rainToday >= 60) {
+        tipEs = 'Alta probabilidad de lluvia — prioriza siembra bajo cubierta y revisa drenajes.';
+        tipEn = 'High chance of rain — prioritize covered planting & check drains.';
+      } else if (temp >= 28) {
+        tipEs = 'Hace calor — riega temprano en la mañana y protege plántulas del sol fuerte.';
+        tipEn = 'Hot day — irrigate early morning and shade young seedlings.';
+      } else if (temp <= 18) {
+        tipEs = 'Mañana fresca — buen día para trasplantar y trabajar en el invernadero.';
+        tipEn = 'Cool morning — good day for transplanting & greenhouse work.';
+      } else {
+        tipEs = 'Condiciones favorables — ideal para siembra y trabajo de campo.';
+        tipEn = 'Favorable conditions — ideal for planting and field work.';
+      }
+      document.getElementById('smartTip').innerHTML = `<strong>💡 Consejo / Tip</strong><br>${tipEs}<br><em style="opacity:0.85">${tipEn}</em>`;
+    }
+    function setQuote() {
+      const day = new Date().getDate();
+      const q = QUOTES[day % QUOTES.length];
+      document.getElementById('quoteText').textContent = `"${q.es}"`;
+      document.getElementById('quoteRef').textContent = `— ${q.ref}`;
+    }
+    function render() {
+      const plantList = document.getElementById('plantList');
+      const plantEmpty = document.getElementById('plantEmpty');
+      plantList.innerHTML = '';
+      if (!plantTasks.length) { plantEmpty.style.display = 'block'; }
+      else {
+        plantEmpty.style.display = 'none';
+        plantTasks.forEach((t, i) => {
+          const li = document.createElement('li');
+          li.className = 'task-item' + (t.done ? ' done' : '');
+          li.innerHTML = `<div class="check" onclick="togglePlant(${i})">${t.done?'✓':''}</div><div><div class="tn">${escapeHtml(t.name)}</div><div class="tm">${escapeHtml(t.section||'')}</div></div><div class="tq">${escapeHtml(t.qty||'')}</div>`;
+          plantList.appendChild(li);
+        });
+      }
+      const otherList = document.getElementById('otherList');
+      const otherEmpty = document.getElementById('otherEmpty');
+      otherList.innerHTML = '';
+      if (!otherTasks.length) { otherEmpty.style.display = 'block'; }
+      else {
+        otherEmpty.style.display = 'none';
+        otherTasks.forEach((t, i) => {
+          const li = document.createElement('li');
+          li.className = 'task-item' + (t.done ? ' done' : '');
+          li.innerHTML = `<div class="check" onclick="toggleOther(${i})">${t.done?'✓':''}</div><div><div class="tn">${escapeHtml(t.name)}</div></div>`;
+          otherList.appendChild(li);
+        });
+      }
+      const done = plantTasks.filter(t => t.done).length;
+      document.getElementById('plantBadge').textContent = plantTasks.length;
+      document.getElementById('otherBadge').textContent = otherTasks.length;
+      document.getElementById('progressText').textContent = `${done}/${plantTasks.length}`;
+      document.getElementById('progressFill').style.width = (plantTasks.length ? done/plantTasks.length*100 : 0) + '%';
+      document.getElementById('impactNum').textContent = impact;
+      document.getElementById('weekDone').textContent = weekDone;
+      document.getElementById('weekGoal').textContent = weekGoal;
+      const pct = weekGoal ? Math.round(weekDone / weekGoal * 100) : 0;
+      document.getElementById('weekPct').textContent = pct + '%';
+      document.getElementById('weekFill').style.width = Math.min(pct, 100) + '%';
+      const staffList = document.getElementById('staffList');
+      staffList.innerHTML = staff.map(s => `<div class="staff-item"><strong>${escapeHtml(s.name)}</strong> <span class="staff-role">— ${escapeHtml(s.role)}</span></div>`).join('') || '<div class="empty">Sin equipo asignado</div>';
+      const img = document.getElementById('photoImg');
+      const ph = document.getElementById('photoPlaceholder');
+      const lab = document.getElementById('photoLabel');
+      if (photoUrl) {
+        img.src = photoUrl; img.style.display = 'block'; ph.style.display = 'none';
+        if (photoCaption) { lab.textContent = photoCaption; lab.style.display = 'block'; }
+        else lab.style.display = 'none';
+      } else {
+        img.style.display = 'none'; ph.style.display = 'block'; lab.style.display = 'none';
+      }
+      document.getElementById('lastUpdated').textContent = localStorage.getItem('gfp_lastUpdated') || 'Ahora';
+    }
+    function togglePlant(i) { plantTasks[i].done = !plantTasks[i].done; saveToStorage(); render(); }
+    function toggleOther(i) { otherTasks[i].done = !otherTasks[i].done; saveToStorage(); render(); }
+    function saveToStorage() {
+      localStorage.setItem('gfp_plant', JSON.stringify(plantTasks));
+      localStorage.setItem('gfp_other', JSON.stringify(otherTasks));
+      localStorage.setItem('gfp_staff', JSON.stringify(staff));
+      localStorage.setItem('gfp_impact', String(impact));
+      localStorage.setItem('gfp_weekGoal', String(weekGoal));
+      localStorage.setItem('gfp_weekDone', String(weekDone));
+      localStorage.setItem('gfp_photo', photoUrl);
+      localStorage.setItem('gfp_photoCap', photoCaption);
+      localStorage.setItem('gfp_version', String(DATA_VERSION));
+      localStorage.setItem('gfp_lastUpdated', new Date().toLocaleString('es-PA'));
+    }
+    function loadFromStorage() {
+      try {
+        const ver = parseInt(localStorage.getItem('gfp_version') || '0', 10);
+        if (ver < DATA_VERSION) {
+          plantTasks = DEFAULT_PLANT; otherTasks = DEFAULT_OTHER; staff = DEFAULT_STAFF;
+          impact = 127; weekGoal = 20; weekDone = 8;
+          photoUrl = '';
+          photoCaption = 'Arcoíris sobre Chiriquí / Rainbow over Chiriquí';
+          saveToStorage(); return;
+        }
+        plantTasks = JSON.parse(localStorage.getItem('gfp_plant') || 'null') || DEFAULT_PLANT;
+        otherTasks = JSON.parse(localStorage.getItem('gfp_other') || 'null') || DEFAULT_OTHER;
+        staff = JSON.parse(localStorage.getItem('gfp_staff') || 'null') || DEFAULT_STAFF;
+        impact = parseInt(localStorage.getItem('gfp_impact') || '127', 10);
+        weekGoal = parseInt(localStorage.getItem('gfp_weekGoal') || '20', 10);
+        weekDone = parseInt(localStorage.getItem('gfp_weekDone') || '8', 10);
+        photoUrl = localStorage.getItem('gfp_photo') || '';
+        photoCaption = localStorage.getItem('gfp_photoCap') || '';
+      } catch (e) {
+        plantTasks = DEFAULT_PLANT; otherTasks = DEFAULT_OTHER; staff = DEFAULT_STAFF;
+        impact = 127; weekGoal = 20; weekDone = 8;
+      }
+    }
+    function toggleEdit() {
+      const panel = document.getElementById('editPanel');
+      if (panel.classList.contains('open')) { panel.classList.remove('open'); return; }
+      document.getElementById('editPlant').value = plantTasks.map(t => [t.name, t.section, t.qty].filter(Boolean).join(' | ')).join('\n');
+      document.getElementById('editOther').value = otherTasks.map(t => t.name).join('\n');
+      document.getElementById('editImpact').value = impact;
+      document.getElementById('editWeekGoal').value = weekGoal;
+      document.getElementById('editWeekDone').value = weekDone;
+      document.getElementById('editStaff').value = staff.map(s => `${s.name} - ${s.role}`).join('\n');
+      document.getElementById('editPhoto').value = photoUrl;
+      document.getElementById('editPhotoCaption').value = photoCaption;
+      panel.classList.add('open');
+    }
+    function saveAll() {
+      const plantRaw = document.getElementById('editPlant').value.trim();
+      const otherRaw = document.getElementById('editOther').value.trim();
+      plantTasks = plantRaw.split('\n').filter(l => l.trim()).map(line => {
+        const p = line.split('|').map(s => s.trim());
+        return { name: p[0] || 'Sin nombre', section: p[1] || '', qty: p[2] || '', done: false };
+      });
+      otherTasks = otherRaw.split('\n').filter(l => l.trim()).map(line => ({ name: line.trim(), done: false }));
+      impact = parseInt(document.getElementById('editImpact').value || '0', 10);
+      weekGoal = parseInt(document.getElementById('editWeekGoal').value || '20', 10);
+      weekDone = parseInt(document.getElementById('editWeekDone').value || '0', 10);
+      staff = document.getElementById('editStaff').value.trim().split('\n').filter(l => l.trim()).map(line => {
+        const parts = line.split('-').map(s => s.trim());
+        return { name: parts[0] || line, role: parts[1] || '' };
+      });
+      photoUrl = document.getElementById('editPhoto').value.trim();
+      photoCaption = document.getElementById('editPhotoCaption').value.trim();
+      saveToStorage(); render(); toggleEdit();
+    }
+    function resetDefaults() {
+      if (!confirm('¿Restaurar datos de ejemplo? / Reset to sample data?')) return;
+      plantTasks = DEFAULT_PLANT; otherTasks = DEFAULT_OTHER; staff = DEFAULT_STAFF;
+      impact = 127; weekGoal = 20; weekDone = 8; photoUrl = ''; photoCaption = '';
+      saveToStorage(); render(); toggleEdit();
+    }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+      else document.exitFullscreen();
+    }
+    document.addEventListener('keydown', e => {
+      if ((e.key === 'e' || e.key === 'E') && !document.getElementById('editPanel').classList.contains('open')) toggleEdit();
+      if (e.key === 'Escape') document.getElementById('editPanel').classList.remove('open');
+      if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+    });
+    loadFromStorage();
+    render();
+    setQuote();
+    updateClock();
+    setInterval(updateClock, 1000);
+    loadWeather();
+    setInterval(loadWeather, 15 * 60 * 1000);
+  </script>
+</body>
+</html>

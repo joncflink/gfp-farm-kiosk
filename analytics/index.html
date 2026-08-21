@@ -1,1 +1,99 @@
-placeholder
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GFP Productividad y Ahorros</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--border:#334155}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.header h1{font-size:1.2rem;font-weight:800}.header p{font-size:.7rem;color:var(--muted)}
+.clock{font-size:1.3rem;font-weight:800;text-align:right}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:14px 18px;max-width:1400px;margin:0 auto}
+@media(max-width:1100px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:16px;min-height:140px}
+.card h3{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.gauge-wrap{position:relative;width:120px;height:120px;margin:0 auto}
+.gauge-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;line-height:1}
+.gauge-val span{font-size:.65rem;font-weight:600;color:var(--muted)}
+.big-num{font-size:2.4rem;font-weight:900;line-height:1}
+.sub{font-size:.75rem;color:var(--muted);margin-top:4px}
+.span2{grid-column:span 2}
+.chart-box{height:220px;position:relative}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-around;flex-wrap:wrap}
+.pill{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:700}
+.pill.red{background:rgba(220,38,38,.2);color:#fca5a5}
+.pill.yellow{background:rgba(202,138,4,.2);color:#fde047}
+.pill.green{background:rgba(22,163,74,.2);color:#86efac}
+.savings-box{background:linear-gradient(135deg,#14532d,#166534);border:none}
+.savings-box .big-num{color:#86efac}
+.footer{padding:10px 18px;font-size:.65rem;color:var(--muted);display:flex;justify-content:space-between;border-top:1px solid var(--border);max-width:1400px;margin:0 auto}
+.db-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px}.db-dot.off{background:#ef4444}
+.gfp-nav{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.gfp-nav a{font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;text-decoration:none;color:#e2e8f0;opacity:.75;border:1px solid transparent}
+.gfp-nav a:hover{opacity:1}
+.gfp-nav a.active{opacity:1;background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.4);color:#86efac}
+</style>
+</head>
+<body>
+<header class="header">
+  <div><h1>GFP · Productividad y Ahorros</h1><p>Productivity and savings · Supabase live · Chiriquí</p></div>
+  <nav class="gfp-nav"><a href="https://gfp-farm-kiosk-joncflink-1220s-projects.vercel.app">Kiosk</a><a href="https://gfp-ceo-dashboard-joncflink-1220s-projects.vercel.app">CEO</a><a class="active" href="https://gfp-productivity-joncflink-1220s-projects.vercel.app">Productividad</a></nav>
+  <div class="clock" id="clock">--:--</div>
+</header>
+<div class="grid">
+  <div class="card"><h3>Completado hoy</h3><div class="gauge-wrap"><canvas id="gToday"></canvas><div class="gauge-val" id="todayPct">—<span>%</span></div></div><div class="sub" style="text-align:center" id="todayDetail">—</div></div>
+  <div class="card"><h3>Meta semanal bandejas</h3><div class="gauge-wrap"><canvas id="gWeek"></canvas><div class="gauge-val" id="weekPct">—<span>%</span></div></div><div class="sub" style="text-align:center" id="weekDetail">—</div></div>
+  <div class="card"><h3>Excepciones abiertas</h3><div class="row" style="margin-top:12px"><div style="text-align:center"><div class="big-num" style="color:#fca5a5" id="openRed">0</div><div class="sub">Rojo</div></div><div style="text-align:center"><div class="big-num" style="color:#fde047" id="openYellow">0</div><div class="sub">Amarillo</div></div></div><div class="sub" style="text-align:center;margin-top:12px" id="resolvedToday">—</div></div>
+  <div class="card savings-box"><h3 style="color:#bbf7d0">Productividad recuperada</h3><div class="big-num" id="prodScore">—</div><div class="sub" style="color:#bbf7d0" id="prodNote">vs meta 25–30%</div><div class="sub" style="color:#86efac;margin-top:8px" id="impactLine">Impacto: —</div></div>
+  <div class="card span2"><h3>Tareas por día (7 días)</h3><div class="chart-box"><canvas id="chartTasks"></canvas></div></div>
+  <div class="card span2"><h3>Siembra vs otro</h3><div class="chart-box"><canvas id="chartMix"></canvas></div></div>
+  <div class="card span2"><h3>Excepciones resueltas</h3><div class="chart-box"><canvas id="chartEx"></canvas></div></div>
+  <div class="card span2"><h3>Señal de ahorro</h3><div id="savingsCopy" style="font-size:.9rem;line-height:1.5;color:#cbd5e1;padding:8px 0">Cargando…</div><div class="row" style="margin-top:12px;justify-content:flex-start;gap:8px" id="signalPills"></div></div>
+</div>
+<div class="footer"><div><span class="db-dot" id="dbDot"></span>Supabase · <strong id="lastUpdated">—</strong></div><div>GFP · Target 25–30% capacity recovery</div></div>
+<script>
+const SB_URL="https://lhvsirylnpydfqncabwd.supabase.co",SB_KEY="sb_publishable_WYO2HK-2vFHCUNM615F7HQ_5R6AFt-i",sb=supabase.createClient(SB_URL,SB_KEY);
+let chartTasks,chartMix,chartEx,gToday,gWeek;
+function tick(){document.getElementById("clock").textContent=new Date().toLocaleTimeString("es-PA",{hour:"2-digit",minute:"2-digit",hour12:true})}
+function parseTrays(q){if(!q)return 0;const m=String(q).match(/(\d+)/);return m?parseInt(m[1],10):0}
+function doughnut(id,pct,color){const val=Math.min(100,Math.max(0,pct));return new Chart(document.getElementById(id),{type:"doughnut",data:{datasets:[{data:[val,100-val],backgroundColor:[color,"#334155"],borderWidth:0}]},options:{cutout:"78%",plugins:{legend:{display:false},tooltip:{enabled:false}},responsive:true,maintainAspectRatio:true}})}
+async function loadAll(){try{const since=new Date();since.setDate(since.getDate()-6);const sinceStr=since.toISOString().slice(0,10);const today=new Date().toISOString().slice(0,10);
+const[tasksRes,exRes,setRes]=await Promise.all([sb.from("tasks").select("*").gte("task_date",sinceStr).order("task_date"),sb.from("exceptions").select("*").order("created_at",{ascending:false}).limit(50),sb.from("settings").select("*")]);
+if(tasksRes.error)throw tasksRes.error;document.getElementById("dbDot").classList.remove("off");
+const tasks=tasksRes.data||[],exceptions=exRes.data||[],map={};(setRes.data||[]).forEach(s=>map[s.key]=s.value);
+const weekGoal=parseInt(map.week_goal||"20",10),weekDone=parseInt(map.week_done||"0",10),impact=parseInt(map.impact||"0",10);
+const todayTasks=tasks.filter(t=>t.task_date===today),todayDone=todayTasks.filter(t=>t.done).length,todayPct=todayTasks.length?Math.round(todayDone/todayTasks.length*100):0;
+let traysDone=0;tasks.filter(t=>t.kind==="plant"&&t.done).forEach(t=>traysDone+=parseTrays(t.qty));const trays=weekDone||traysDone,weekPct=weekGoal?Math.min(100,Math.round(trays/weekGoal*100)):0;
+const openRed=exceptions.filter(e=>e.status==="open"&&e.level==="red").length,openYellow=exceptions.filter(e=>e.status==="open"&&e.level==="yellow").length;
+const resolved=exceptions.filter(e=>e.status==="resolved"),resolvedToday=resolved.filter(e=>e.resolved_at&&e.resolved_at.slice(0,10)===today).length;
+document.getElementById("todayPct").innerHTML=todayPct+"<span>%</span>";document.getElementById("todayDetail").textContent=todayDone+" / "+todayTasks.length+" tareas";
+document.getElementById("weekPct").innerHTML=weekPct+"<span>%</span>";document.getElementById("weekDetail").textContent=trays+" / "+weekGoal+" bandejas";
+document.getElementById("openRed").textContent=openRed;document.getElementById("openYellow").textContent=openYellow;document.getElementById("resolvedToday").textContent=resolvedToday+" resueltas hoy";
+document.getElementById("impactLine").textContent="Impacto: "+impact+" niños (semana)";
+let score=todayPct;if(openRed===0)score=Math.min(100,score+10);if(openYellow===0)score=Math.min(100,score+5);
+document.getElementById("prodScore").textContent=score+"%";document.getElementById("prodNote").textContent=score>=70?"En camino al 25–30%":"Subir completado diario";
+if(gToday)gToday.destroy();if(gWeek)gWeek.destroy();
+gToday=doughnut("gToday",todayPct,todayPct>=80?"#22c55e":todayPct>=50?"#eab308":"#ef4444");gWeek=doughnut("gWeek",weekPct,weekPct>=80?"#22c55e":weekPct>=50?"#eab308":"#38bdf8");
+const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().slice(0,10))}
+const donePerDay=days.map(d=>tasks.filter(t=>t.task_date===d&&t.done).length),totalPerDay=days.map(d=>tasks.filter(t=>t.task_date===d).length);
+const labels=days.map(d=>{const x=new Date(d+"T12:00:00");return x.toLocaleDateString("es-PA",{weekday:"short",day:"numeric"})});
+if(chartTasks)chartTasks.destroy();chartTasks=new Chart(document.getElementById("chartTasks"),{type:"bar",data:{labels,datasets:[{label:"Hechas",data:donePerDay,backgroundColor:"#22c55e",borderRadius:6},{label:"Total",data:totalPerDay,backgroundColor:"#334155",borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8"}}},scales:{x:{ticks:{color:"#94a3b8"},grid:{color:"#1e293b"}},y:{beginAtZero:true,ticks:{color:"#94a3b8",stepSize:1},grid:{color:"#1e293b"}}}}});
+const plantN=tasks.filter(t=>t.kind==="plant").length,otherN=tasks.filter(t=>t.kind==="other").length;
+if(chartMix)chartMix.destroy();chartMix=new Chart(document.getElementById("chartMix"),{type:"doughnut",data:{labels:["Siembra","Otro"],datasets:[{data:[plantN,otherN],backgroundColor:["#22c55e","#38bdf8"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{color:"#94a3b8"}}}}});
+const resPerDay=days.map(d=>resolved.filter(e=>e.resolved_at&&e.resolved_at.slice(0,10)===d).length);
+if(chartEx)chartEx.destroy();chartEx=new Chart(document.getElementById("chartEx"),{type:"line",data:{labels,datasets:[{label:"Resueltas",data:resPerDay,borderColor:"#a78bfa",backgroundColor:"rgba(167,139,250,.2)",fill:true,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#94a3b8"}}},scales:{x:{ticks:{color:"#94a3b8"},grid:{color:"#1e293b"}},y:{beginAtZero:true,ticks:{color:"#94a3b8",stepSize:1},grid:{color:"#1e293b"}}}}});
+let narrative=todayPct>=80&&openRed===0?"Alta ejecución y cero rojos. Así se captura el 25–30%.":(openRed>0?"Hay "+openRed+" rojo(s). Prevenir con amarillos es el ahorro.":"Completado al "+todayPct+"%. Subir check-off lleva al 25–30%.");
+document.getElementById("savingsCopy").textContent=narrative;
+document.getElementById("signalPills").innerHTML='<span class="pill '+(todayPct>=80?"green":todayPct>=50?"yellow":"red")+'">Hoy '+todayPct+'%</span><span class="pill '+(openRed===0?"green":"red")+'">Rojos '+openRed+'</span><span class="pill green">Meta 25–30%</span>';
+document.getElementById("lastUpdated").textContent=new Date().toLocaleString("es-PA")}catch(e){console.error(e);document.getElementById("dbDot").classList.add("off")}}
+tick();setInterval(tick,1000);loadAll();setInterval(loadAll,60000);
+</script>
+</body>
+</html>

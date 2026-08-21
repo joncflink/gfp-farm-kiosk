@@ -1,1 +1,138 @@
-placeholder
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GFP CEO Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--red:#dc2626;--yellow:#ca8a04;--green:#16a34a;--bg:#f8fafc;--text:#0f172a;--muted:#64748b;--border:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#0f172a,#14532d);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.header h1{font-size:1.15rem;font-weight:800}.header p{font-size:.7rem;opacity:.85}
+.clock{font-size:1.4rem;font-weight:800}
+.status-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:14px 16px;background:#fff;border-bottom:1px solid var(--border)}
+.status-card{border-radius:12px;padding:14px;text-align:center;border:2px solid}
+.status-card.red{background:#fef2f2;border-color:#fecaca}.status-card.yellow{background:#fefce8;border-color:#fde047}.status-card.green{background:#f0fdf4;border-color:#bbf7d0}
+.status-num{font-size:2.2rem;font-weight:900}
+.status-card.red .status-num{color:var(--red)}.status-card.yellow .status-num{color:var(--yellow)}.status-card.green .status-num{color:var(--green)}
+.status-label{font-size:.75rem;font-weight:700;margin-top:4px;text-transform:uppercase}
+.main{flex:1;display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:14px 16px;max-width:1400px;margin:0 auto;width:100%}
+.panel{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden}
+.panel-h{padding:10px 14px;font-weight:800;font-size:.9rem;border-bottom:1px solid var(--border);background:#f8fafc;display:flex;justify-content:space-between;align-items:center}
+.panel-b{padding:10px 12px}
+.item{display:grid;grid-template-columns:8px 1fr auto auto;gap:10px;align-items:start;padding:10px 8px;border-bottom:1px solid #f1f5f9}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:6px}.dot.red{background:var(--red)}.dot.yellow{background:var(--yellow)}
+.item-title{font-weight:700;font-size:.88rem}.item-meta{font-size:.7rem;color:var(--muted);margin-top:2px}
+.item-area{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;background:#e2e8f0}
+.btn-sm{font-size:.65rem;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
+.btn-resolve{background:#dcfce7;color:#166534}
+.area-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.area-card{border:1px solid var(--border);border-radius:10px;padding:12px}
+.area-card h3{font-size:.8rem;font-weight:800;margin-bottom:6px}
+.area-status{font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block}
+.area-status.ok{background:#f0fdf4;color:var(--green)}.area-status.warn{background:#fefce8;color:var(--yellow)}.area-status.crit{background:#fef2f2;color:var(--red)}
+.rules-box{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:14px;margin-top:12px}
+.rules-box h3{font-size:.8rem;color:#94a3b8;margin-bottom:8px}
+.rule-line{font-size:.78rem;padding:4px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px}
+.rule-when{color:#38bdf8;font-weight:700;min-width:100px}
+.footer{padding:8px 16px;font-size:.65rem;color:var(--muted);border-top:1px solid var(--border);background:#fff;display:flex;justify-content:space-between}
+.db-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:4px}.db-dot.off{background:#ef4444}
+.empty{text-align:center;padding:28px;color:var(--muted)}
+.controls{position:fixed;bottom:40px;right:14px;display:flex;gap:8px;z-index:40;opacity:.35}.controls:hover{opacity:1}
+.ctrl-btn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;background:#0f172a;color:#fff;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.edit-panel{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.edit-panel.open{display:flex}
+.edit-box{background:#fff;border-radius:16px;width:94%;max-width:520px;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 24px 48px rgba(0,0,0,.3)}
+.edit-box h2{font-size:1.15rem;margin-bottom:12px}
+.edit-box label{display:block;font-weight:700;font-size:.75rem;margin:12px 0 4px;color:var(--muted)}
+.edit-box input,.edit-box select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edit-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{padding:11px 18px;border-radius:8px;font-weight:700;font-size:.9rem;border:none;cursor:pointer}
+.btn-primary{background:var(--green);color:#fff}.btn-secondary{background:#e2e8f0;color:var(--text)}
+.section{border-top:1px solid var(--border);margin-top:18px;padding-top:12px}
+.section h3{font-size:.85rem;font-weight:800;margin-bottom:8px}
+.msg{font-size:.8rem;color:var(--green);font-weight:600;margin-top:8px;display:none}
+.gfp-nav{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.gfp-nav a{font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;text-decoration:none;color:inherit;opacity:.75;border:1px solid transparent}
+.gfp-nav a:hover{opacity:1}
+.gfp-nav a.active{opacity:1;background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25)}
+@media(max-width:900px){.main{grid-template-columns:1fr}.status-bar{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div><h1>GFP CEO Dashboard</h1><p>Solo excepciones · Supabase · Chiriquí, Panamá</p></div>
+  <nav class="gfp-nav"><a href="https://gfp-farm-kiosk-joncflink-1220s-projects.vercel.app">Kiosk</a><a class="active" href="https://gfp-ceo-dashboard-joncflink-1220s-projects.vercel.app">CEO</a><a href="https://gfp-productivity-joncflink-1220s-projects.vercel.app">Productividad</a></nav>
+  <div class="clock" id="clock">--:--</div>
+</header>
+<div class="status-bar">
+  <div class="status-card red"><div class="status-num" id="countRed">0</div><div class="status-label">Rojo / Red</div></div>
+  <div class="status-card yellow"><div class="status-num" id="countYellow">0</div><div class="status-label">Amarillo / Yellow</div></div>
+  <div class="status-card green"><div class="status-num" id="countGreen">0</div><div class="status-label">Verde / Green</div></div>
+</div>
+<main class="main">
+  <div class="panel">
+    <div class="panel-h"><span>Excepciones activas</span><button class="btn-sm" style="background:#0f172a;color:#fff" onclick="toggleEdit()">Editar</button></div>
+    <div class="panel-b" id="exceptionList"><div class="empty">Cargando...</div></div>
+  </div>
+  <div>
+    <div class="panel">
+      <div class="panel-h">Areas de la granja</div>
+      <div class="panel-b"><div class="area-grid" id="areaGrid"></div></div>
+    </div>
+    <div class="rules-box"><h3>Reglas fijas</h3><div id="rulesList"></div></div>
+  </div>
+</main>
+<div class="footer">
+  <div><span class="db-dot" id="dbDot"></span>Supabase · <strong id="lastUpdated">—</strong></div>
+  <div>Editar: tecla E · Resolver: check</div>
+</div>
+<div class="controls">
+  <button class="ctrl-btn" onclick="toggleEdit()">E</button>
+  <button class="ctrl-btn" onclick="loadAll()">R</button>
+</div>
+<div class="edit-panel" id="editPanel">
+  <div class="edit-box">
+    <h2>Editar / Edit</h2>
+    <label>Nivel / Level</label>
+    <select id="exLevel"><option value="red">Rojo — Emergencia</option><option value="yellow" selected>Amarillo — Atencion</option></select>
+    <label>Area</label>
+    <select id="exArea"><option value="equip">Equipo</option><option value="out">Exterior</option><option value="gh">Invernadero</option><option value="dehy">Deshidratacion</option><option value="general">General</option></select>
+    <label>Titulo / Title</label>
+    <input type="text" id="exTitle" placeholder="ej. Falta linea de riego" />
+    <label>Detalle (opcional)</label>
+    <input type="text" id="exDetail" placeholder="ej. Compra en David" />
+    <div class="edit-actions"><button class="btn btn-primary" onclick="addException()">+ Agregar excepcion</button></div>
+    <div class="msg" id="addMsg">Agregada</div>
+    <div class="section">
+      <h3>Cambiar estado de un area</h3>
+      <div class="row2">
+        <div><label>Area</label><select id="areaPick"><option value="dehy">dehy</option><option value="gh">gh</option><option value="out">out</option><option value="equip">equip</option></select></div>
+        <div><label>Estado</label><select id="areaStatus"><option value="ok">OK</option><option value="warn">Atencion</option><option value="crit">Critico</option></select></div>
+      </div>
+      <label>Nota</label><input type="text" id="areaNote" />
+      <div class="edit-actions"><button class="btn btn-primary" onclick="saveOneArea()">Guardar area</button></div>
+    </div>
+    <div class="edit-actions" style="margin-top:20px"><button class="btn btn-secondary" onclick="toggleEdit()">Cerrar</button></div>
+  </div>
+</div>
+<script>
+const SB_URL="https://lhvsirylnpydfqncabwd.supabase.co",SB_KEY="sb_publishable_WYO2HK-2vFHCUNM615F7HQ_5R6AFt-i",sb=supabase.createClient(SB_URL,SB_KEY);
+let exceptions=[],areas=[],rules=[];
+function esc(s){return s?String(s).replace(/&/g,"&").replace(/</g,"<"):""}
+function tick(){document.getElementById("clock").textContent=new Date().toLocaleTimeString("es-PA",{hour:"2-digit",minute:"2-digit",hour12:true})}
+async function loadAll(){try{const[ex,ar,ru]=await Promise.all([sb.from("exceptions").select("*").eq("status","open").order("created_at",{ascending:false}),sb.from("area_status").select("*"),sb.from("rules").select("*").eq("active",true).order("sort_order")]);if(ex.error)throw ex.error;document.getElementById("dbDot").classList.remove("off");exceptions=ex.data||[];areas=ar.data||[];rules=ru.data||[];render();document.getElementById("lastUpdated").textContent=new Date().toLocaleString("es-PA")}catch(e){console.error(e);document.getElementById("dbDot").classList.add("off")}}
+function render(){const reds=exceptions.filter(e=>e.level==="red"),yellows=exceptions.filter(e=>e.level==="yellow"),greens=areas.filter(a=>a.status==="ok").length;document.getElementById("countRed").textContent=reds.length;document.getElementById("countYellow").textContent=yellows.length;document.getElementById("countGreen").textContent=greens;const active=reds.concat(yellows),list=document.getElementById("exceptionList");if(!active.length){list.innerHTML="<div class=\"empty\"><strong>Todo en verde</strong><br>No hay emergencias</div>"}else{list.innerHTML=active.map(e=>`<div class=\"item\"><div class=\"dot ${e.level}\"></div><div><div class=\"item-title\">${esc(e.title||"Sin titulo")}</div><div class=\"item-meta\">${esc(e.detail||"")}</div></div><span class=\"item-area\">${esc(e.area)}</span><button class=\"btn-sm btn-resolve\" onclick=\"resolveException('${e.id}')\">OK</button></div>`).join("")}document.getElementById("areaGrid").innerHTML=areas.map(a=>{const st=a.status==="crit"?"crit":(a.status==="warn"?"warn":"ok");const lab=st==="crit"?"Rojo":(st==="warn"?"Atencion":"OK");return `<div class=\"area-card\"><h3>${esc(a.area)}</h3><span class=\"area-status ${st}\">${lab}</span><div style=\"font-size:.7rem;color:#64748b;margin-top:6px\">${esc(a.note||"")}</div></div>`}).join("");document.getElementById("rulesList").innerHTML=rules.map(r=>`<div class=\"rule-line\"><span class=\"rule-when\">${esc(r.when_label)}</span><span>${esc(r.what_text)}</span></div>`).join("")}
+async function resolveException(id){if(!confirm("Marcar como resuelto?"))return;const{error}=await sb.from("exceptions").update({status:"resolved",resolved_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await loadAll()}window.resolveException=resolveException;
+function toggleEdit(){const panel=document.getElementById("editPanel");panel.classList.toggle("open");document.getElementById("addMsg").style.display="none";document.getElementById("exTitle").value="";document.getElementById("exDetail").value=""}
+async function addException(){const title=document.getElementById("exTitle").value.trim();if(!title){alert("Escribe un titulo");return}const row={level:document.getElementById("exLevel").value,area:document.getElementById("exArea").value,title:title,detail:document.getElementById("exDetail").value.trim(),status:"open",source:"manual"};const{error}=await sb.from("exceptions").insert(row);if(error){alert(error.message);return}document.getElementById("exTitle").value="";document.getElementById("exDetail").value="";document.getElementById("addMsg").style.display="block";await loadAll();setTimeout(()=>document.getElementById("editPanel").classList.remove("open"),800)}
+async function saveOneArea(){const area=document.getElementById("areaPick").value,status=document.getElementById("areaStatus").value,note=document.getElementById("areaNote").value.trim();const{error}=await sb.from("area_status").upsert({area,status,note,updated_at:new Date().toISOString()});if(error){alert(error.message);return}await loadAll();alert("Area actualizada")}
+document.addEventListener("keydown",e=>{if((e.key==="e"||e.key==="E")&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="SELECT"){if(!document.getElementById("editPanel").classList.contains("open"))toggleEdit()}if(e.key==="Escape")document.getElementById("editPanel").classList.remove("open")});
+tick();setInterval(tick,1000);loadAll();setInterval(loadAll,30000);
+</script>
+</body>
+</html>

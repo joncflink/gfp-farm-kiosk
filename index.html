@@ -1,20 +1,102 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>GFP Kiosco</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#f0fdf4;color:#14532d;min-height:100vh;display:flex;flex-direction:column}.header{background:linear-gradient(135deg,#14532d,#166534);color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.brand{display:flex;align-items:center;gap:10px}.brand h1{font-size:1rem;font-weight:800}.brand p{font-size:.65rem;opacity:.9}.nav a{color:#fff;text-decoration:none;font-size:.75rem;font-weight:700;padding:6px 12px;border:1px solid rgba(255,255,255,.3);border-radius:20px;margin-right:4px}.nav a.on{background:rgba(255,255,255,.22)}.lang-toggle{display:flex;background:rgba(0,0,0,.25);border-radius:20px;padding:3px}.lang-toggle button{background:transparent;border:none;color:#fff;font-size:.7rem;font-weight:800;padding:5px 10px;border-radius:16px;cursor:pointer;opacity:.7}.lang-toggle button.active{background:#fff;color:#14532d;opacity:1}.clock{font-size:1.3rem;font-weight:800}.urgency{background:#dc2626;color:#fff;margin:10px 12px 0;padding:12px 16px;border-radius:10px;font-weight:900;font-size:1.4rem}.urgency small{display:block;font-size:.85rem;font-weight:700;opacity:.9}.stock{margin:8px 12px 0;padding:10px 14px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}.stock.red{display:block;background:#fef2f2;border:2px solid #fecaca;color:#991b1b}.stock.yellow{display:block;background:#fefce8;border:2px solid #fde047;color:#854d0e}.day-notes{margin:8px 12px 0;padding:10px 14px;border-radius:10px;background:#e0f2fe;border:2px solid #7dd3fc;color:#0c4a6e;font-size:.9rem;font-weight:600;display:none}.day-notes.show{display:block}.monday-banner{margin:8px 12px 0;padding:10px 14px;border-radius:10px;background:#1e3a8a;color:#fff;font-weight:800;font-size:1rem;display:none}.monday-banner.show{display:block}.monday-banner small{display:block;font-weight:600;opacity:.9;font-size:.8rem}.main{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px;padding:12px;flex:1}.main.monday-mode{grid-template-columns:1fr 1fr 1fr 1fr}@media(max-width:1100px){.main.monday-mode{grid-template-columns:1fr 1fr}}@media(max-width:900px){.main,.main.monday-mode{grid-template-columns:1fr}}.card{background:#fff;border:1px solid #bbf7d0;border-radius:10px;display:flex;flex-direction:column;min-height:140px}.card h2{background:#14532d;color:#fff;padding:8px 12px;font-size:.85rem;border-radius:10px 10px 0 0;display:flex;justify-content:space-between}.card h2.harvest{background:#166534}.card h2.pack{background:#1d4ed8}.card h2.ship{background:#7c2d12}.card h2.prep{background:#6d28d9}.card .body{padding:10px 12px;flex:1;max-height:50vh;overflow:auto}.badge{background:#eab308;color:#111;font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:800}.item{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f0fdf4}.item.done{opacity:.45}.check{width:24px;height:24px;border:2px solid #16a34a;border-radius:6px;cursor:pointer;text-align:center;line-height:20px;font-size:12px}.item.done .check{background:#16a34a;color:#fff}.qty{font-size:.7rem;background:#dcfce7;padding:2px 8px;border-radius:4px;font-weight:700}.dest{font-size:.65rem;color:#64748b}.empty{color:#64748b;text-align:center;padding:16px;font-size:.85rem}.footer{padding:8px 14px;font-size:.65rem;color:#64748b;border-top:1px solid #bbf7d0;background:#fff;display:flex;justify-content:space-between}.dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px}.dot.off{background:#ef4444}.prog{padding:8px 12px;border-top:1px solid #bbf7d0;font-size:.7rem;color:#64748b}.bar{height:8px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin-top:4px}.fill{height:100%;background:#16a34a;width:0%}.hidden{display:none!important}.edit-banner{margin:8px 12px 0;padding:8px 12px;border-radius:8px;background:#422006;color:#fef3c7;font-size:.8rem;font-weight:700;display:none}.edit-banner.on{display:flex;align-items:center;justify-content:space-between}.edit-banner button{background:#fbbf24;color:#111;border:none;border-radius:6px;padding:6px 10px;font-weight:800;cursor:pointer}body.view-only .check{pointer-events:none;opacity:.5}</style></head><body>
-<header class="header"><div class="brand"><div><h1>Global Food Providers</h1><p id="brandSub">Kiosco</p></div></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><nav class="nav"><a class="on" href="https://gfp-farm-kiosk-joncflink-1220s-projects.vercel.app">Kiosk</a><a href="https://gfp-ceo-dashboard-joncflink-1220s-projects.vercel.app">CEO</a></nav><div class="lang-toggle"><button type="button" id="btnEs" class="active" onclick="setLang('es')">ES</button><button type="button" id="btnEn" onclick="setLang('en')">EN</button></div><div class="clock" id="clock">--:--</div></div></header>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GFP Kiosco</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f0fdf4;color:#14532d;min-height:100vh;display:flex;flex-direction:column}
+.header{background:linear-gradient(135deg,#14532d,#166534);color:#fff;padding:10px 16px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;justify-self:start}
+.brand img.logo{height:44px;width:44px;object-fit:contain;border-radius:8px;background:#fff;padding:2px}
+.brand h1{font-size:1rem;font-weight:800;line-height:1.15}
+.brand p{font-size:.65rem;opacity:.9}
+.nav-center{justify-self:center;display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.nav-center a{color:#fff;text-decoration:none;font-size:.8rem;font-weight:700;padding:8px 16px;border:1px solid rgba(255,255,255,.35);border-radius:20px;opacity:.9}
+.nav-center a.on{opacity:1;background:rgba(255,255,255,.25);border-color:#fff}
+.header-right{justify-self:end;display:flex;align-items:center;gap:10px}
+.lang-toggle{display:flex;background:rgba(0,0,0,.25);border-radius:20px;padding:3px}
+.lang-toggle button{background:transparent;border:none;color:#fff;font-size:.7rem;font-weight:800;padding:5px 10px;border-radius:16px;cursor:pointer;opacity:.7}
+.lang-toggle button.active{background:#fff;color:#14532d;opacity:1}
+.clock{font-size:1.25rem;font-weight:800}
+@media(max-width:800px){.header{grid-template-columns:1fr;justify-items:center;text-align:center}.brand,.nav-center,.header-right{justify-self:center}}
+.urgency{background:#dc2626;color:#fff;margin:10px 12px 0;padding:12px 16px;border-radius:10px;font-weight:900;font-size:1.35rem}
+.urgency small{display:block;font-size:.85rem;font-weight:700;opacity:.9}
+.stock{margin:8px 12px 0;padding:10px 14px;border-radius:10px;font-size:.85rem;font-weight:700;display:none}
+.stock.red{display:block;background:#fef2f2;border:2px solid #fecaca;color:#991b1b}
+.stock.yellow{display:block;background:#fefce8;border:2px solid #fde047;color:#854d0e}
+.day-notes{margin:8px 12px 0;padding:10px 14px;border-radius:10px;background:#e0f2fe;border:2px solid #7dd3fc;color:#0c4a6e;font-size:.9rem;font-weight:600;display:none}
+.day-notes.show{display:block}
+.monday-banner{margin:8px 12px 0;padding:10px 14px;border-radius:10px;background:#1e3a8a;color:#fff;font-weight:800;font-size:1rem;display:none}
+.monday-banner.show{display:block}
+.monday-banner small{display:block;font-weight:600;opacity:.9;font-size:.8rem}
+.main{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:12px;padding:12px;flex:1}
+.main.monday-mode{grid-template-columns:1fr 1fr 1fr 1fr}
+@media(max-width:1100px){.main.monday-mode{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.main,.main.monday-mode{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid #bbf7d0;border-radius:10px;display:flex;flex-direction:column;min-height:140px}
+.card h2{background:#14532d;color:#fff;padding:8px 12px;font-size:.85rem;border-radius:10px 10px 0 0;display:flex;justify-content:space-between}
+.card h2.harvest{background:#166534}.card h2.pack{background:#1d4ed8}.card h2.ship{background:#7c2d12}.card h2.prep{background:#6d28d9}
+.card .body{padding:10px 12px;flex:1;max-height:50vh;overflow:auto}
+.badge{background:#eab308;color:#111;font-size:.65rem;padding:2px 8px;border-radius:10px;font-weight:800}
+.item{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #f0fdf4}
+.item.done{opacity:.45}
+.check{width:24px;height:24px;border:2px solid #16a34a;border-radius:6px;cursor:pointer;text-align:center;line-height:20px;font-size:12px}
+.item.done .check{background:#16a34a;color:#fff}
+.qty{font-size:.7rem;background:#dcfce7;padding:2px 8px;border-radius:4px;font-weight:700}
+.dest{font-size:.65rem;color:#64748b}
+.empty{color:#64748b;text-align:center;padding:16px;font-size:.85rem}
+.footer{padding:8px 14px;font-size:.65rem;color:#64748b;border-top:1px solid #bbf7d0;background:#fff;display:flex;justify-content:space-between}
+.dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;margin-right:4px}
+.dot.off{background:#ef4444}
+.prog{padding:8px 12px;border-top:1px solid #bbf7d0;font-size:.7rem;color:#64748b}
+.bar{height:8px;background:#e5e7eb;border-radius:8px;overflow:hidden;margin-top:4px}
+.fill{height:100%;background:#16a34a;width:0%}
+.hidden{display:none!important}
+.edit-banner{margin:8px 12px 0;padding:8px 12px;border-radius:8px;background:#422006;color:#fef3c7;font-size:.8rem;font-weight:700;display:none}
+.edit-banner.on{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.edit-banner button{background:#fbbf24;color:#111;border:none;border-radius:6px;padding:6px 10px;font-weight:800;cursor:pointer}
+body.view-only .check{pointer-events:none;opacity:.5}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="brand">
+    <img class="logo" src="logo.png" alt="GFP"/>
+    <div>
+      <h1>Global Food Providers</h1>
+      <p id="brandSub">Kiosco</p>
+    </div>
+  </div>
+  <nav class="nav-center">
+    <a class="on" href="https://gfp-farm-kiosk-joncflink-1220s-projects.vercel.app">Kiosk</a>
+    <a href="https://gfp-ceo-dashboard-joncflink-1220s-projects.vercel.app">CEO</a>
+    <a href="https://gfp-productivity-joncflink-1220s-projects.vercel.app">Productividad</a>
+  </nav>
+  <div class="header-right">
+    <div class="lang-toggle">
+      <button type="button" id="btnEs" class="active" onclick="setLang('es')">ES</button>
+      <button type="button" id="btnEn" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+</header>
 <div class="urgency"><span id="urgencyMain">¡PLANTA HOY!</span><small id="urgencySub">PLANT TODAY</small></div>
 <div class="stock" id="stockAlert"></div>
 <div class="day-notes" id="dayNotes"><div id="notesBody">—</div></div>
-<div class="monday-banner" id="mondayBanner"><span id="monTitle">LUNES · ALL HANDS</span><small id="monSub">Compra/Prep → Cosecha → Empaque → Envío · private + market</small></div>
+<div class="monday-banner" id="mondayBanner"><span id="monTitle">LUNES · ALL HANDS</span><small id="monSub">Compra/Prep → Cosecha → Empaque → Envío</small></div>
 <div class="edit-banner" id="editBanner"><span>MODO SUPERVISOR — E</span><span><button type="button" id="btnRefresh">Actualizar</button> <button type="button" id="btnUnlock">Listo</button></span></div>
 <main class="main monday-mode hidden" id="mainMonday">
-<div class="card"><h2 class="prep"><span id="hPrep">Compra / Prep</span> <span class="badge" id="prb">0</span></h2><div class="body" id="prepList"></div><div class="prog"><span id="prt">0/0</span><div class="bar"><div class="fill" id="prf"></div></div></div></div>
-<div class="card"><h2 class="harvest"><span id="hHarvest">Cosecha</span> <span class="badge" id="hb">0</span></h2><div class="body" id="harvestList"></div><div class="prog"><span id="ht">0/0</span><div class="bar"><div class="fill" id="hf"></div></div></div></div>
-<div class="card"><h2 class="pack"><span id="hPack">Empaque</span> <span class="badge" id="kb">0</span></h2><div class="body" id="packList"></div><div class="prog"><span id="kt">0/0</span><div class="bar"><div class="fill" id="kf"></div></div></div></div>
-<div class="card"><h2 class="ship"><span id="hShip">Envío</span> <span class="badge" id="sb">0</span></h2><div class="body" id="shipList"></div><div class="prog"><span id="st">0/0</span><div class="bar"><div class="fill" id="sf"></div></div></div></div>
+  <div class="card"><h2 class="prep"><span id="hPrep">Compra / Prep</span> <span class="badge" id="prb">0</span></h2><div class="body" id="prepList"></div><div class="prog"><span id="prt">0/0</span><div class="bar"><div class="fill" id="prf"></div></div></div></div>
+  <div class="card"><h2 class="harvest"><span id="hHarvest">Cosecha</span> <span class="badge" id="hb">0</span></h2><div class="body" id="harvestList"></div><div class="prog"><span id="ht">0/0</span><div class="bar"><div class="fill" id="hf"></div></div></div></div>
+  <div class="card"><h2 class="pack"><span id="hPack">Empaque</span> <span class="badge" id="kb">0</span></h2><div class="body" id="packList"></div><div class="prog"><span id="kt">0/0</span><div class="bar"><div class="fill" id="kf"></div></div></div></div>
+  <div class="card"><h2 class="ship"><span id="hShip">Envío</span> <span class="badge" id="sb">0</span></h2><div class="body" id="shipList"></div><div class="prog"><span id="st">0/0</span><div class="bar"><div class="fill" id="sf"></div></div></div></div>
 </main>
 <main class="main" id="mainDaily">
-<div class="card"><h2><span id="hPlant">Siembra de Hoy</span> <span class="badge" id="pb">0</span></h2><div class="body" id="plantList">Cargando...</div></div>
-<div class="card"><h2><span id="hOther">Otro Trabajo</span></h2><div class="body" id="otherList"></div></div>
+  <div class="card"><h2><span id="hPlant">Siembra de Hoy</span> <span class="badge" id="pb">0</span></h2><div class="body" id="plantList">Cargando...</div></div>
+  <div class="card"><h2><span id="hOther">Otro Trabajo</span></h2><div class="body" id="otherList"></div></div>
 </main>
 <div class="footer"><div><span class="dot" id="dot"></span>Supabase · <span id="upd">—</span></div><div id="modeLabel">—</div></div>
 <script>
@@ -22,7 +104,7 @@ const SB_URL="https://lhvsirylnpydfqncabwd.supabase.co",SB_KEY="sb_publishable_W
 var lang=localStorage.getItem("gfp_lang")||"es",editMode=false,isMonMode=false,lastMonDate="";
 function t(k){var es={urgencyMain:"¡PLANTA HOY!",urgencySub:"PLANT TODAY",monTitle:"LUNES · ALL HANDS",monSub:"Compra/Prep → Cosecha → Empaque → Envío",hPrep:"Compra / Prep",hHarvest:"Cosecha",hPack:"Empaque",hShip:"Envío",hPlant:"Siembra de Hoy",hOther:"Otro Trabajo",emptyLane:"—",modeDaily:"Diario",modeMon:"LUNES",stockZero:"STOCK CERO",stockLow:"Stock bajo"};var en={urgencyMain:"PLANT TODAY",urgencySub:"¡PLANTA HOY!",monTitle:"MONDAY · ALL HANDS",monSub:"Buy/Prep → Harvest → Pack → Ship",hPrep:"Buy / Prep",hHarvest:"Harvest",hPack:"Pack",hShip:"Ship",hPlant:"Plant Today",hOther:"Other Work",emptyLane:"—",modeDaily:"Daily",modeMon:"MONDAY",stockZero:"ZERO STOCK",stockLow:"Low stock"};return (lang==="en"?en:es)[k]||k}
 function setLang(L){lang=L==="en"?"en":"es";localStorage.setItem("gfp_lang",lang);document.getElementById("btnEs").classList.toggle("active",lang==="es");document.getElementById("btnEn").classList.toggle("active",lang==="en");applyI18n();loadAll()}
-function applyI18n(){document.getElementById("urgencyMain").textContent=t("urgencyMain");document.getElementById("urgencySub").textContent=t("urgencySub");document.getElementById("monTitle").textContent=t("monTitle");document.getElementById("monSub").textContent=t("monSub");document.getElementById("hPrep").textContent=t("hPrep");document.getElementById("hHarvest").textContent=t("hHarvest");document.getElementById("hPack").textContent=t("hPack");document.getElementById("hShip").textContent=t("hShip");document.getElementById("hPlant").textContent=t("hPlant");document.getElementById("hOther").textContent=t("hOther");document.getElementById("modeLabel").textContent=isMonMode?(t("modeMon")+" "+lastMonDate):t("modeDaily")}
+function applyI18n(){["urgencyMain","urgencySub","monTitle","monSub","hPrep","hHarvest","hPack","hShip","hPlant","hOther"].forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=t(id)});document.getElementById("modeLabel").textContent=isMonMode?(t("modeMon")+" "+lastMonDate):t("modeDaily")}
 function setEditMode(on){editMode=!!on;document.body.classList.toggle("view-only",!editMode);document.getElementById("editBanner").classList.toggle("on",editMode)}
 function panamaParts(){var f=new Intl.DateTimeFormat("en-US",{timeZone:"America/Panama",year:"numeric",month:"2-digit",day:"2-digit",weekday:"short"});var p={};f.formatToParts(new Date()).forEach(function(x){p[x.type]=x.value});var map={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};return{y:+p.year,m:+p.month,d:+p.day,dow:map[p.weekday]||0}}
 function todayStr(){var p=panamaParts();return p.y+"-"+String(p.m).padStart(2,"0")+"-"+String(p.d).padStart(2,"0")}
@@ -39,4 +121,6 @@ document.getElementById("btnRefresh").onclick=function(){loadAll()};
 document.getElementById("btnUnlock").onclick=function(){setEditMode(false)};
 document.addEventListener("keydown",function(e){if(e.key==="e"||e.key==="E")setEditMode(!editMode)});
 setEditMode(false);setLang(lang);tick();setInterval(tick,1000);loadAll();setInterval(loadAll,30000);
-</script></body></html>
+</script>
+</body>
+</html>

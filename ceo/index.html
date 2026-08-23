@@ -13,21 +13,25 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
 .header{background:linear-gradient(135deg,#0f172a,#14532d);color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .header h1{font-size:1.15rem;font-weight:800}.header p{font-size:.7rem;opacity:.85}
 .clock{font-size:1.4rem;font-weight:800}
+.gfp-nav{display:flex;gap:6px;flex-wrap:wrap}
+.gfp-nav a{font-size:.75rem;font-weight:700;padding:6px 14px;border-radius:20px;text-decoration:none;color:#fff;opacity:.85;border:1px solid rgba(255,255,255,.3)}
+.gfp-nav a.active{opacity:1;background:rgba(255,255,255,.22);border-color:#fff}
 .status-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:14px 16px;background:#fff;border-bottom:1px solid var(--border)}
 .status-card{border-radius:12px;padding:14px;text-align:center;border:2px solid}
 .status-card.red{background:#fef2f2;border-color:#fecaca}.status-card.yellow{background:#fefce8;border-color:#fde047}.status-card.green{background:#f0fdf4;border-color:#bbf7d0}
 .status-num{font-size:2.2rem;font-weight:900}
 .status-card.red .status-num{color:var(--red)}.status-card.yellow .status-num{color:var(--yellow)}.status-card.green .status-num{color:var(--green)}
 .status-label{font-size:.75rem;font-weight:700;margin-top:4px;text-transform:uppercase}
-.main{flex:1;display:grid;grid-template-columns:1.4fr 1fr;gap:14px;padding:14px 16px;max-width:1400px;margin:0 auto;width:100%}
-.panel{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden}
-.panel-h{padding:10px 14px;font-weight:800;font-size:.9rem;border-bottom:1px solid var(--border);background:#f8fafc;display:flex;justify-content:space-between;align-items:center}
-.panel-b{padding:10px 12px}
+.main{flex:1;display:grid;grid-template-columns:1.3fr 1fr;gap:14px;padding:14px 16px;max-width:1400px;margin:0 auto;width:100%}
+@media(max-width:900px){.main{grid-template-columns:1fr}.status-bar{grid-template-columns:1fr}}
+.panel{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.panel-h{padding:10px 14px;font-weight:800;font-size:.9rem;border-bottom:1px solid var(--border);background:#f8fafc;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.panel-b{padding:10px 12px;max-height:420px;overflow:auto}
 .item{display:grid;grid-template-columns:8px 1fr auto auto;gap:10px;align-items:start;padding:10px 8px;border-bottom:1px solid #f1f5f9}
 .dot{width:8px;height:8px;border-radius:50%;margin-top:6px}.dot.red{background:var(--red)}.dot.yellow{background:var(--yellow)}
 .item-title{font-weight:700;font-size:.88rem}.item-meta{font-size:.7rem;color:var(--muted);margin-top:2px}
 .item-area{font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:20px;background:#e2e8f0}
-.btn-sm{font-size:.65rem;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
+.btn-sm{font-size:.65rem;padding:4px 8px;border-radius:6px;border:none;cursor:pointer;font-weight:700;background:#0f172a;color:#fff}
 .btn-resolve{background:#dcfce7;color:#166534}
 .area-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .area-card{border:1px solid var(--border);border-radius:10px;padding:12px}
@@ -38,101 +42,315 @@ body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--tex
 .rules-box h3{font-size:.8rem;color:#94a3b8;margin-bottom:8px}
 .rule-line{font-size:.78rem;padding:4px 0;border-bottom:1px solid #1e293b;display:flex;gap:8px}
 .rule-when{color:#38bdf8;font-weight:700;min-width:100px}
-.footer{padding:8px 16px;font-size:.65rem;color:var(--muted);border-top:1px solid var(--border);background:#fff;display:flex;justify-content:space-between}
+.inv-row{display:grid;grid-template-columns:1fr 70px 70px 80px;gap:8px;align-items:center;padding:8px 4px;border-bottom:1px solid #f1f5f9;font-size:.8rem}
+.inv-row input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:.85rem}
+.inv-low{background:#fefce8}
+.inv-crit{background:#fef2f2}
+.footer{padding:8px 16px;font-size:.65rem;color:var(--muted);border-top:1px solid var(--border);background:#fff;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
 .db-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:4px}.db-dot.off{background:#ef4444}
-.empty{text-align:center;padding:28px;color:var(--muted)}
-.controls{position:fixed;bottom:40px;right:14px;display:flex;gap:8px;z-index:40;opacity:.35}.controls:hover{opacity:1}
-.ctrl-btn{width:40px;height:40px;border-radius:50%;border:none;cursor:pointer;background:#0f172a;color:#fff;font-size:16px;box-shadow:0 4px 12px rgba(0,0,0,.25)}
-.edit-panel{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.edit-panel.open{display:flex}
-.edit-box{background:#fff;border-radius:16px;width:94%;max-width:520px;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 24px 48px rgba(0,0,0,.3)}
-.edit-box h2{font-size:1.15rem;margin-bottom:12px}
-.edit-box label{display:block;font-weight:700;font-size:.75rem;margin:12px 0 4px;color:var(--muted)}
-.edit-box input,.edit-box select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.95rem;font-family:inherit}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.edit-actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
-.btn{padding:11px 18px;border-radius:8px;font-weight:700;font-size:.9rem;border:none;cursor:pointer}
-.btn-primary{background:var(--green);color:#fff}.btn-secondary{background:#e2e8f0;color:var(--text)}
-.section{border-top:1px solid var(--border);margin-top:18px;padding-top:12px}
-.section h3{font-size:.85rem;font-weight:800;margin-bottom:8px}
-.msg{font-size:.8rem;color:var(--green);font-weight:600;margin-top:8px;display:none}
-.gfp-nav{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.gfp-nav a{font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;text-decoration:none;color:inherit;opacity:.75;border:1px solid transparent}
-.gfp-nav a:hover{opacity:1}
-.gfp-nav a.active{opacity:1;background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.25)}
-@media(max-width:900px){.main{grid-template-columns:1fr}.status-bar{grid-template-columns:1fr}}
+.empty{text-align:center;padding:20px;color:var(--muted)}
+.hint{font-size:.7rem;color:var(--muted);padding:8px;background:#f1f5f9;border-radius:8px;margin-top:8px;line-height:1.4}
+.btn{padding:8px 14px;border-radius:8px;font-weight:700;font-size:.8rem;border:none;cursor:pointer;background:var(--green);color:#fff}
+.notes-panel{margin:12px 16px;background:#fff;border:1px solid #7dd3fc;border-radius:10px;overflow:hidden}
+.notes-panel .panel-h{background:#0c4a6e;color:#fff;padding:10px 14px;font-size:.9rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.notes-panel textarea{width:100%;min-height:88px;border:none;padding:12px 14px;font-family:inherit;font-size:.95rem;resize:vertical;outline:none}
+.notes-panel .hint{padding:0 14px 12px;font-size:.75rem;color:#64748b;background:transparent}
+.btn-save{background:#fbbf24;color:#111;border:none;padding:8px 14px;border-radius:8px;font-weight:800;cursor:pointer}
+.staff-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px;margin-top:12px}
+.staff-box h3{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.staff-chip{display:inline-block;margin:4px 4px 0 0;padding:6px 10px;border-radius:16px;background:#f0fdf4;border:1px solid #86efac;font-size:.78rem;font-weight:700}
+.staff-chip span{font-weight:600;opacity:.7;font-size:.65rem}
 </style>
 </head>
 <body>
 <header class="header">
-  <div><h1>GFP CEO Dashboard</h1><p>Solo excepciones · Supabase · Chiriquí, Panamá</p></div>
-  <nav class="gfp-nav"><a href="https://gfp-farm-kiosk-joncflink-1220s-projects.vercel.app">Kiosk</a><a class="active" href="https://gfp-ceo-dashboard-joncflink-1220s-projects.vercel.app">CEO</a><a href="https://gfp-productivity-joncflink-1220s-projects.vercel.app">Productividad</a></nav>
+  <div>
+    <h1>GFP CEO Dashboard</h1>
+    <p>Exceptions · Inventory · Daily notes · Staff</p>
+  </div>
+  <nav class="gfp-nav">
+    <a href="https://gfp-farm-kiosk-joncflink-1220s-projects.vercel.app">Kiosk</a>
+    <a class="active" href="https://gfp-ceo-dashboard-joncflink-1220s-projects.vercel.app">CEO</a>
+    <a href="https://gfp-productivity-joncflink-1220s-projects.vercel.app">Productividad</a>
+  </nav>
   <div class="clock" id="clock">--:--</div>
 </header>
+
 <div class="status-bar">
-  <div class="status-card red"><div class="status-num" id="countRed">0</div><div class="status-label">Rojo / Red</div></div>
-  <div class="status-card yellow"><div class="status-num" id="countYellow">0</div><div class="status-label">Amarillo / Yellow</div></div>
-  <div class="status-card green"><div class="status-num" id="countGreen">0</div><div class="status-label">Verde / Green</div></div>
+  <div class="status-card red"><div class="status-num" id="countRed">0</div><div class="status-label">Red</div></div>
+  <div class="status-card yellow"><div class="status-num" id="countYellow">0</div><div class="status-label">Yellow</div></div>
+  <div class="status-card green"><div class="status-num" id="countGreen">0</div><div class="status-label">Green areas</div></div>
 </div>
+
+<div class="notes-panel">
+  <div class="panel-h">
+    <span>Daily notes → Kiosk</span>
+    <button class="btn-save" type="button" id="btnSaveNote">Save</button>
+  </div>
+  <textarea id="dailyNote" placeholder="Clear note for the team (shows on kiosk)..."></textarea>
+  <div class="hint">Everyone sees this on the kiosk. Keep it short and actionable.</div>
+</div>
+
 <main class="main">
-  <div class="panel">
-    <div class="panel-h"><span>Excepciones activas</span><button class="btn-sm" style="background:#0f172a;color:#fff" onclick="toggleEdit()">Editar</button></div>
-    <div class="panel-b" id="exceptionList"><div class="empty">Cargando...</div></div>
+  <div>
+    <div class="panel">
+      <div class="panel-h">
+        <span>Open exceptions</span>
+        <span style="font-size:.7rem;color:var(--muted)">Yellow &gt; 3 days → Red</span>
+      </div>
+      <div class="panel-b" id="exceptionList"><div class="empty">Loading...</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h">
+        <span>Inventory / Stock</span>
+        <button class="btn" type="button" id="btnSaveInv">Save stock</button>
+      </div>
+      <div class="panel-b">
+        <div class="inv-row" style="font-weight:700;color:var(--muted);font-size:.7rem">
+          <div>Item</div><div>Qty</div><div>Min</div><div>Status</div>
+        </div>
+        <div id="invList"><div class="empty">Loading inventory...</div></div>
+        <div class="hint">qty ≤ min → yellow exception. qty = 0 → red. Edit here or in the Inventario sheet (auto-sync every 15 min).</div>
+      </div>
+    </div>
   </div>
   <div>
     <div class="panel">
-      <div class="panel-h">Areas de la granja</div>
-      <div class="panel-b"><div class="area-grid" id="areaGrid"></div></div>
+      <div class="panel-h">Farm areas</div>
+      <div class="panel-b"><div class="area-grid" id="areaGrid"><div class="empty">Loading...</div></div></div>
     </div>
-    <div class="rules-box"><h3>Reglas fijas</h3><div id="rulesList"></div></div>
+    <div class="staff-box">
+      <h3>Staff / Responsibilities (easy to change later)</h3>
+      <div id="staffList"><div class="empty">Loading...</div></div>
+    </div>
+    <div class="rules-box">
+      <h3>Standing rules</h3>
+      <div id="rulesList"></div>
+    </div>
   </div>
 </main>
+
 <div class="footer">
-  <div><span class="db-dot" id="dbDot"></span>Supabase · <strong id="lastUpdated">—</strong></div>
-  <div>Editar: tecla E · Resolver: check</div>
+  <div><span class="db-dot off" id="dbDot"></span>Supabase · <strong id="lastUpdated">—</strong></div>
+  <div>Low stock = yellow · 3 days = red · Pay week Mon–Sat</div>
 </div>
-<div class="controls">
-  <button class="ctrl-btn" onclick="toggleEdit()">E</button>
-  <button class="ctrl-btn" onclick="loadAll()">R</button>
-</div>
-<div class="edit-panel" id="editPanel">
-  <div class="edit-box">
-    <h2>Editar / Edit</h2>
-    <label>Nivel / Level</label>
-    <select id="exLevel"><option value="red">Rojo — Emergencia</option><option value="yellow" selected>Amarillo — Atencion</option></select>
-    <label>Area</label>
-    <select id="exArea"><option value="equip">Equipo</option><option value="out">Exterior</option><option value="gh">Invernadero</option><option value="dehy">Deshidratacion</option><option value="general">General</option></select>
-    <label>Titulo / Title</label>
-    <input type="text" id="exTitle" placeholder="ej. Falta linea de riego" />
-    <label>Detalle (opcional)</label>
-    <input type="text" id="exDetail" placeholder="ej. Compra en David" />
-    <div class="edit-actions"><button class="btn btn-primary" onclick="addException()">+ Agregar excepcion</button></div>
-    <div class="msg" id="addMsg">Agregada</div>
-    <div class="section">
-      <h3>Cambiar estado de un area</h3>
-      <div class="row2">
-        <div><label>Area</label><select id="areaPick"><option value="dehy">dehy</option><option value="gh">gh</option><option value="out">out</option><option value="equip">equip</option></select></div>
-        <div><label>Estado</label><select id="areaStatus"><option value="ok">OK</option><option value="warn">Atencion</option><option value="crit">Critico</option></select></div>
-      </div>
-      <label>Nota</label><input type="text" id="areaNote" />
-      <div class="edit-actions"><button class="btn btn-primary" onclick="saveOneArea()">Guardar area</button></div>
-    </div>
-    <div class="edit-actions" style="margin-top:20px"><button class="btn btn-secondary" onclick="toggleEdit()">Cerrar</button></div>
-  </div>
-</div>
+
 <script>
-const SB_URL="https://lhvsirylnpydfqncabwd.supabase.co",SB_KEY="sb_publishable_WYO2HK-2vFHCUNM615F7HQ_5R6AFt-i",sb=supabase.createClient(SB_URL,SB_KEY);
-let exceptions=[],areas=[],rules=[];
-function esc(s){return s?String(s).replace(/&/g,"&").replace(/</g,"<"):""}
-function tick(){document.getElementById("clock").textContent=new Date().toLocaleTimeString("es-PA",{hour:"2-digit",minute:"2-digit",hour12:true})}
-async function loadAll(){try{const[ex,ar,ru]=await Promise.all([sb.from("exceptions").select("*").eq("status","open").order("created_at",{ascending:false}),sb.from("area_status").select("*"),sb.from("rules").select("*").eq("active",true).order("sort_order")]);if(ex.error)throw ex.error;document.getElementById("dbDot").classList.remove("off");exceptions=ex.data||[];areas=ar.data||[];rules=ru.data||[];render();document.getElementById("lastUpdated").textContent=new Date().toLocaleString("es-PA")}catch(e){console.error(e);document.getElementById("dbDot").classList.add("off")}}
-function render(){const reds=exceptions.filter(e=>e.level==="red"),yellows=exceptions.filter(e=>e.level==="yellow"),greens=areas.filter(a=>a.status==="ok").length;document.getElementById("countRed").textContent=reds.length;document.getElementById("countYellow").textContent=yellows.length;document.getElementById("countGreen").textContent=greens;const active=reds.concat(yellows),list=document.getElementById("exceptionList");if(!active.length){list.innerHTML="<div class=\"empty\"><strong>Todo en verde</strong><br>No hay emergencias</div>"}else{list.innerHTML=active.map(e=>`<div class=\"item\"><div class=\"dot ${e.level}\"></div><div><div class=\"item-title\">${esc(e.title||"Sin titulo")}</div><div class=\"item-meta\">${esc(e.detail||"")}</div></div><span class=\"item-area\">${esc(e.area)}</span><button class=\"btn-sm btn-resolve\" onclick=\"resolveException('${e.id}')\">OK</button></div>`).join("")}document.getElementById("areaGrid").innerHTML=areas.map(a=>{const st=a.status==="crit"?"crit":(a.status==="warn"?"warn":"ok");const lab=st==="crit"?"Rojo":(st==="warn"?"Atencion":"OK");return `<div class=\"area-card\"><h3>${esc(a.area)}</h3><span class=\"area-status ${st}\">${lab}</span><div style=\"font-size:.7rem;color:#64748b;margin-top:6px\">${esc(a.note||"")}</div></div>`}).join("");document.getElementById("rulesList").innerHTML=rules.map(r=>`<div class=\"rule-line\"><span class=\"rule-when\">${esc(r.when_label)}</span><span>${esc(r.what_text)}</span></div>`).join("")}
-async function resolveException(id){if(!confirm("Marcar como resuelto?"))return;const{error}=await sb.from("exceptions").update({status:"resolved",resolved_at:new Date().toISOString()}).eq("id",id);if(error){alert(error.message);return}await loadAll()}window.resolveException=resolveException;
-function toggleEdit(){const panel=document.getElementById("editPanel");panel.classList.toggle("open");document.getElementById("addMsg").style.display="none";document.getElementById("exTitle").value="";document.getElementById("exDetail").value=""}
-async function addException(){const title=document.getElementById("exTitle").value.trim();if(!title){alert("Escribe un titulo");return}const row={level:document.getElementById("exLevel").value,area:document.getElementById("exArea").value,title:title,detail:document.getElementById("exDetail").value.trim(),status:"open",source:"manual"};const{error}=await sb.from("exceptions").insert(row);if(error){alert(error.message);return}document.getElementById("exTitle").value="";document.getElementById("exDetail").value="";document.getElementById("addMsg").style.display="block";await loadAll();setTimeout(()=>document.getElementById("editPanel").classList.remove("open"),800)}
-async function saveOneArea(){const area=document.getElementById("areaPick").value,status=document.getElementById("areaStatus").value,note=document.getElementById("areaNote").value.trim();const{error}=await sb.from("area_status").upsert({area,status,note,updated_at:new Date().toISOString()});if(error){alert(error.message);return}await loadAll();alert("Area actualizada")}
-document.addEventListener("keydown",e=>{if((e.key==="e"||e.key==="E")&&document.activeElement.tagName!=="INPUT"&&document.activeElement.tagName!=="SELECT"){if(!document.getElementById("editPanel").classList.contains("open"))toggleEdit()}if(e.key==="Escape")document.getElementById("editPanel").classList.remove("open")});
-tick();setInterval(tick,1000);loadAll();setInterval(loadAll,30000);
+const SB_URL = "https://lhvsirylnpydfqncabwd.supabase.co";
+const SB_KEY = "sb_publishable_WYO2HK-2vFHCUNM615F7HQ_5R6AFt-i";
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+let exceptions = [];
+let areas = [];
+let rules = [];
+let inventory = [];
+let staff = [];
+
+function esc(s) {
+  return s == null ? "" : String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/"/g, "&quot;");
+}
+
+function tick() {
+  document.getElementById("clock").textContent = new Date().toLocaleTimeString("en-US", {
+    timeZone: "America/Panama",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
+
+function daysOpen(iso) {
+  if (!iso) return 0;
+  return (Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24);
+}
+
+async function upsertSetting(key, value) {
+  const { data: existing } = await sb.from("settings").select("key").eq("key", key).maybeSingle();
+  if (existing) {
+    const { error } = await sb.from("settings").update({ value: value, updated_at: new Date().toISOString() }).eq("key", key);
+    if (error) throw error;
+  } else {
+    const { error } = await sb.from("settings").insert({ key: key, value: value, updated_at: new Date().toISOString() });
+    if (error) throw error;
+  }
+}
+
+async function loadDailyNote() {
+  try {
+    const { data, error } = await sb.from("settings").select("key,value").in("key", ["daily_note", "daily_note_date"]);
+    if (error) throw error;
+    const map = {};
+    (data || []).forEach(r => { map[r.key] = r.value; });
+    document.getElementById("dailyNote").value = map.daily_note || "";
+  } catch (e) {
+    console.error("loadDailyNote", e);
+  }
+}
+
+async function saveDailyNote() {
+  const note = document.getElementById("dailyNote").value.trim();
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Panama" });
+  try {
+    await upsertSetting("daily_note", note);
+    await upsertSetting("daily_note_date", today);
+    alert("Note saved — visible on the kiosk");
+  } catch (e) {
+    alert(e.message || e);
+  }
+}
+
+async function autoEscalate() {
+  const yellows = (exceptions || []).filter(e => e.level === "yellow" && e.status === "open");
+  for (const e of yellows) {
+    if (daysOpen(e.created_at) >= 3) {
+      await sb.from("exceptions").update({
+        level: "red",
+        detail: (e.detail || "") + " | Auto-escalated: >3 days yellow"
+      }).eq("id", e.id);
+    }
+  }
+}
+
+async function syncInventoryExceptions() {
+  for (const item of inventory) {
+    const qty = Number(item.qty);
+    const min = Number(item.min_qty);
+    if (qty > min) continue;
+    const exists = exceptions.some(e => e.status === "open" && (e.title || "").indexOf(item.item_name) >= 0);
+    if (exists) continue;
+    await sb.from("exceptions").insert({
+      level: qty <= 0 ? "red" : "yellow",
+      area: item.area || "out",
+      title: "Low stock: " + item.item_name,
+      detail: "Qty " + qty + " " + (item.unit || "") + " ≤ min " + min + ". Order before crisis.",
+      status: "open",
+      source: "inventory"
+    });
+  }
+}
+
+async function loadAll() {
+  try {
+    const [ex, ar, ru, inv, st] = await Promise.all([
+      sb.from("exceptions").select("*").eq("status", "open").order("created_at", { ascending: false }),
+      sb.from("area_status").select("*"),
+      sb.from("rules").select("*").eq("active", true).order("sort_order"),
+      sb.from("inventory").select("*").order("item_name"),
+      sb.from("staff").select("*").eq("active", true).order("sort_order")
+    ]);
+    if (ex.error) throw ex.error;
+    document.getElementById("dbDot").classList.remove("off");
+    exceptions = ex.data || [];
+    areas = ar.data || [];
+    rules = ru.data || [];
+    inventory = inv.data || [];
+    staff = (st.data || []).filter(s => s.area !== "general");
+    await autoEscalate();
+    const ex2 = await sb.from("exceptions").select("*").eq("status", "open").order("created_at", { ascending: false });
+    if (!ex2.error) exceptions = ex2.data || [];
+    await syncInventoryExceptions();
+    const ex3 = await sb.from("exceptions").select("*").eq("status", "open").order("created_at", { ascending: false });
+    if (!ex3.error) exceptions = ex3.data || [];
+    render();
+    document.getElementById("lastUpdated").textContent = new Date().toLocaleString("en-US", { timeZone: "America/Panama" });
+  } catch (e) {
+    console.error(e);
+    document.getElementById("dbDot").classList.add("off");
+    document.getElementById("exceptionList").innerHTML = "<div class=\"empty\">Error: " + esc(e.message || e) + "</div>";
+  }
+}
+
+function render() {
+  const reds = exceptions.filter(e => e.level === "red");
+  const yellows = exceptions.filter(e => e.level === "yellow");
+  const greens = areas.filter(a => a.status === "ok").length;
+  document.getElementById("countRed").textContent = reds.length;
+  document.getElementById("countYellow").textContent = yellows.length;
+  document.getElementById("countGreen").textContent = greens;
+
+  const active = reds.concat(yellows);
+  const list = document.getElementById("exceptionList");
+  if (!active.length) {
+    list.innerHTML = "<div class=\"empty\"><strong>All clear</strong><br>No open exceptions</div>";
+  } else {
+    list.innerHTML = active.map(e => {
+      const age = daysOpen(e.created_at).toFixed(0);
+      return "<div class=\"item\"><div class=\"dot " + e.level + "\"></div><div><div class=\"item-title\">" + esc(e.title || "") + "</div><div class=\"item-meta\">" + esc(e.detail || "") + " · " + age + "d</div></div><span class=\"item-area\">" + esc(e.area) + "</span><button class=\"btn-sm btn-resolve\" data-id=\"" + esc(e.id) + "\">OK</button></div>";
+    }).join("");
+    list.querySelectorAll(".btn-resolve").forEach(btn => {
+      btn.onclick = function () { resolveException(btn.getAttribute("data-id")); };
+    });
+  }
+
+  document.getElementById("areaGrid").innerHTML = (areas.length ? areas : []).map(a => {
+    const st = a.status === "crit" ? "crit" : (a.status === "warn" ? "warn" : "ok");
+    const lab = st === "crit" ? "Red" : (st === "warn" ? "Watch" : "OK");
+    return "<div class=\"area-card\"><h3>" + esc(a.area) + "</h3><span class=\"area-status " + st + "\">" + lab + "</span><div style=\"font-size:.7rem;color:#64748b;margin-top:6px\">" + esc(a.note || "") + "</div></div>";
+  }).join("") || "<div class=\"empty\">No area status rows</div>";
+
+  document.getElementById("rulesList").innerHTML = (rules.length ? rules : []).map(r =>
+    "<div class=\"rule-line\"><span class=\"rule-when\">" + esc(r.when_label) + "</span><span>" + esc(r.what_text) + "</span></div>"
+  ).join("") || "<div style=\"opacity:.7;font-size:.8rem\">No active rules</div>";
+
+  document.getElementById("staffList").innerHTML = (staff.length ? staff : []).map(s =>
+    "<div class=\"staff-chip\">" + esc(s.name) + " <span>" + esc(s.role) + "</span></div>"
+  ).join("") || "<div class=\"empty\">No staff</div>";
+
+  if (!inventory.length) {
+    document.getElementById("invList").innerHTML = "<div class=\"empty\">No inventory items</div>";
+  } else {
+    document.getElementById("invList").innerHTML = inventory.map(item => {
+      const qty = Number(item.qty);
+      const min = Number(item.min_qty);
+      const cls = qty <= 0 ? "inv-crit" : (qty <= min ? "inv-low" : "");
+      const st = qty <= 0 ? "RED" : (qty <= min ? "LOW" : "OK");
+      return "<div class=\"inv-row " + cls + "\" data-id=\"" + item.id + "\"><div>" + esc(item.item_name) + "<div style=\"font-size:.65rem;color:#64748b\">" + esc(item.unit || "") + " · " + esc(item.area || "") + "</div></div><div><input type=\"number\" step=\"any\" class=\"inv-qty\" value=\"" + qty + "\"></div><div><input type=\"number\" step=\"any\" class=\"inv-min\" value=\"" + min + "\"></div><div style=\"font-weight:700\">" + st + "</div></div>";
+    }).join("");
+  }
+}
+
+async function saveInventory() {
+  const rows = document.querySelectorAll("#invList .inv-row[data-id]");
+  try {
+    for (const row of rows) {
+      const id = row.getAttribute("data-id");
+      const qty = row.querySelector(".inv-qty").value;
+      const min = row.querySelector(".inv-min").value;
+      const { error } = await sb.from("inventory").update({
+        qty: Number(qty),
+        min_qty: Number(min),
+        updated_at: new Date().toISOString()
+      }).eq("id", id);
+      if (error) throw error;
+    }
+    await loadAll();
+    alert("Inventory saved. Yellow/red exceptions created if qty ≤ min.");
+  } catch (e) {
+    alert(e.message || e);
+  }
+}
+
+async function resolveException(id) {
+  if (!confirm("Mark resolved?")) return;
+  const { error } = await sb.from("exceptions").update({
+    status: "resolved",
+    resolved_at: new Date().toISOString()
+  }).eq("id", id);
+  if (error) { alert(error.message); return; }
+  await loadAll();
+}
+
+document.getElementById("btnSaveNote").onclick = saveDailyNote;
+document.getElementById("btnSaveInv").onclick = saveInventory;
+
+tick();
+setInterval(tick, 1000);
+loadDailyNote();
+loadAll();
+setInterval(loadAll, 60000);
 </script>
 </body>
 </html>
